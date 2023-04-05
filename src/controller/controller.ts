@@ -27,7 +27,7 @@ export default class ControllerImpl implements Controller{
         this.context = context;
         this.ddongs = ddongGenerator();
         this.ddongCreateTimer = null;
-        this.character = new Character();
+        this.character = new Character(null,{backgroundColor:'red'});
     }   
 
     Init(fn:((ch:Character)=>void)){

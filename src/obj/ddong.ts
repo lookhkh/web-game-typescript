@@ -1,5 +1,6 @@
 import Cordinate from "../type/Cordinate";
 import PlaceAble, { Style } from "../type/position";
+import getDefaultBackground from "../utils/styleGen";
 
 export default class Ddong implements PlaceAble{
    
@@ -8,9 +9,7 @@ export default class Ddong implements PlaceAble{
 
     constructor(position:Cordinate , style?:Style){
         this.position = position;
-        this.style = style? style : {
-            backgroundColor:'black'
-        }
+        this.style = style? style : getDefaultBackground();
     }
 
     getX(){

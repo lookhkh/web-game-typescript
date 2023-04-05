@@ -15,7 +15,7 @@ export class ContextCanvasWrapper implements ContextWrapper{
 
             const { backgroundColor } = obj.style;
             const {currentX, currentY} = obj.position;
-
+            
             this.context.fillStyle=backgroundColor;
             this.context.fillRect(currentX, currentY,10,10);
         });
