@@ -11,7 +11,14 @@ export class ContextCanvasWrapper implements ContextWrapper{
     }
 
     draw(object : PlaceAble[]){
-        object.forEach(obj=>this.context.fillRect(obj.position.currentX, obj.position.currentY,10,10));
+        object.forEach(obj=>{
+
+            const { backgroundColor } = obj.style;
+            const {currentX, currentY} = obj.position;
+
+            this.context.fillStyle=backgroundColor;
+            this.context.fillRect(currentX, currentY,10,10);
+        });
     };
 
     clear(){

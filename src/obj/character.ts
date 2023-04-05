@@ -1,12 +1,16 @@
 import Cordinate from "../type/Cordinate";
-import PlaceAble from "../type/position";
+import PlaceAble, { Style } from "../type/position";
 
 const DEFAULT_MOVE = 3;
 
 export default class Character implements PlaceAble{
     position: Cordinate;
-    constructor(position?:Cordinate){
+    style?: Style;
+    constructor(position?:Cordinate, style?:Style){
         this.position = position?position:{currentX:100,currentY:130};
+        this.style = style? style : {
+            backgroundColor:'green'
+        }
     }
 
     moveLeft(){
