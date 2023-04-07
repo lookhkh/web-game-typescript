@@ -15,7 +15,7 @@ interface Controller{
     detectIfCharacterCrushed():boolean;
 }
 
-export default class ControllerImpl implements Controller{
+class ControllerImpl implements Controller{
     character: Character;
     ddongCreateTimer: number;
     ddongGenerator: () => Ddong[];
@@ -106,3 +106,33 @@ export default class ControllerImpl implements Controller{
 
     }
 }
+
+interface StateManager{
+    impl : Controller | null;
+    getControllerInstance(ddongGenerator: () => Ddong[], context: ContextWrapper):Controller;
+    initController():void;
+}
+
+export const StateManager :StateManager = {
+    impl : null,
+
+    getControllerInstance(ddongGenerator: () => Ddong[], context: ContextWrapper) : Controller{
+
+        if(this.impl!==null) {
+            console.log("impl이 존재함")
+            return this.impl;
+        }
+        else if(this.impl === null){
+            console.log("imple이 존재하지 않음.")
+            this.impl =  new ControllerImpl(ddongGenerator,context);
+            return this.impl;
+        }
+    },
+
+     initController(){
+        console.log(this.impl+" 초기화")
+        this.impl = null;  
+    }
+
+}
+

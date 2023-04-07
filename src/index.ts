@@ -1,4 +1,4 @@
-import ControllerImpl from "./controller/controller";
+import {StateManager}  from "./controller/controller";
 import Character from "./obj/character";
 import { ContextCanvasWrapper } from "./obj/contextWrapper";
 import type from "./type/arrowType";
@@ -21,6 +21,11 @@ function closeModal(){
 
 }
 
+function showReButton(){
+    const modal = document.querySelector('.game');
+    modal.classList.add('active');
+  
+}
 
 function startGame(){
 
@@ -30,8 +35,11 @@ function startGame(){
         
         const contextWrapper = new ContextCanvasWrapper(context);
         
-        const controller = new ControllerImpl(ddongGenerator,contextWrapper);
-        
+        const controller = StateManager.getControllerInstance(ddongGenerator,contextWrapper);
+        const controller2 = StateManager.getControllerInstance(ddongGenerator,contextWrapper);
+       
+        if(controller !== controller2) throw new Error("singleTon Error")
+
         controller.Init((character)=>{
             const gameInit = (ch: KeyboardEvent): void => init(ch, character);
             window.addEventListener('keydown',gameInit);    
@@ -48,8 +56,8 @@ function startGame(){
         
 }
 window.addEventListener('gameOver',()=>{
-    const modal = document.querySelector('.game');
-    modal.classList.add('active');
+    showReButton();
+    StateManager.initController();
 })
 window.addEventListener('load',startGame);
 window.addEventListener('load',()=>{
