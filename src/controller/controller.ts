@@ -1,12 +1,15 @@
 import { ContextWrapper } from "../type/contextInterface";
 import Ddong from "../obj/ddong"
 import Character from "../obj/character";
+import { debounce, throttle } from "lodash";
 
 interface Controller{
+    score:number;
     character : Character;
     context : ContextWrapper;
     ddongGenerator : ()=>Ddong[];
     ddongs:Ddong[];
+    ddongsSnapshot:Ddong[];
     start():void;
     appendNewDdong():void;
     ddongCreateTimer:number | null;
@@ -20,22 +23,26 @@ class ControllerImpl implements Controller{
     ddongCreateTimer: number;
     ddongGenerator: () => Ddong[];
     ddongs: Ddong[];
+    ddongsSnapshot:Ddong[] | undefined;
     context: ContextWrapper;
-
+    score: number;
     constructor(ddongGenerator:()=>Ddong[], context:ContextWrapper){
         this.ddongGenerator = ddongGenerator;
         this.context = context;
         this.ddongs = ddongGenerator();
+        this.ddongsSnapshot = undefined;
         this.ddongCreateTimer = null;
         this.character = new Character(null,{backgroundColor:'red'});
+        this.score = 0;
     }   
 
     Init(fn:((ch:Character)=>void)){
         fn(this.character);
+        
     }
 
-    stop(fn:(id:number, context:ContextWrapper)=>void): void {
-        fn(this.ddongCreateTimer, this.context);
+    stop(fn:(id:number, context:ContextWrapper, score:number)=>void): void {
+        fn(this.ddongCreateTimer, this.context, this.score);
     }
 
   
@@ -82,28 +89,41 @@ class ControllerImpl implements Controller{
         this.ddongCreateTimer  = id;
     }
 
-    private clearMethod(): (id: number, context: ContextWrapper) => void {
-        return (id, context) => {
+    private clearMethod(): (id: number, context: ContextWrapper , score:number) => void {
+        return (id, context, score) => {
             alert("Gane Over");
 
             if (id)
                 window.clearInterval(id);
                 context.clear();
 
-            if(window) window.dispatchEvent(new Event("gameOver"));
-
+            if(window) {
+                this.fireGameOverEvent(score);
+            }
         };
+    }
+
+    private fireGameOverEvent(score: number) {
+        const detail: CustomEventInit = { detail: { score } };
+        const event = new CustomEvent("gameOver", detail);
+
+        window.dispatchEvent(event);
     }
 
     private draw() {
         this.context.clear();
         this.context.draw(this.ddongs);
         this.context.draw([this.character])
+        this.ddongsSnapshot = this.ddongs;
         this.ddongs = this.ddongs
             .map(ddong => new Ddong({currentX:ddong.getX(), currentY:ddong.getY()+1}))
             .filter(ddong=>ddong.getY() < 1000)
-            
+        throttle(this.fireGameScoreChangeEvent(),1000)();
+    }
 
+    private fireGameScoreChangeEvent() {
+              this.score+=1;
+              return ()=>window.dispatchEvent(new CustomEvent('scoreChange',{detail:{score:this.score}}));
     }
 }
 

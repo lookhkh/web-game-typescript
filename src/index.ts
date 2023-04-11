@@ -24,7 +24,7 @@ function closeModal(){
 function showReButton(){
     const modal = document.querySelector('.game');
     modal.classList.add('active');
-  
+    
 }
 
 function startGame(){
@@ -55,8 +55,14 @@ function startGame(){
         
         
 }
-window.addEventListener('gameOver',()=>{
+
+function showFinalScore(e:CustomEvent){
+    const score = document.querySelector('#final-score');
+    score.innerHTML = e.detail.score;
+}
+window.addEventListener('gameOver',(e:CustomEvent)=>{
     showReButton();
+    showFinalScore(e);
     StateManager.initController();
 })
 window.addEventListener('load',startGame);
@@ -64,7 +70,10 @@ window.addEventListener('load',()=>{
     const modal = document.querySelector('.game');
     modal.addEventListener('click',()=>{
         startGame();
-        const modal = document.querySelector('.game');
-        modal.classList.remove('active');
+        modal.classList.remove('active')
     })
+})
+window.addEventListener('scoreChange',(e:CustomEvent)=>{
+    const score = document.querySelector('#score');
+    score.innerHTML = e.detail.score;
 })
